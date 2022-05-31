@@ -1,0 +1,39 @@
+namespace: default
+serviceName: ""
+
+dnsServers:
+  - server: cdns-m
+    ip: 10.43.10.115
+  - server: cdns-1
+    ip: 10.43.10.116
+  - server: cdns-2
+    ip: 10.43.10.117
+  - server: cdns-3
+    ip: 10.43.10.118
+
+dbPassword: ""
+dataPath: ""
+backupPath: ""
+
+
+replicaCount: 1
+
+image:
+  repository: ""
+  name: "mariadb"
+  tag: "10.8.3"
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+
+imagePullSecrets: {}
+nameOverride: ""
+fullnameOverride: ""
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

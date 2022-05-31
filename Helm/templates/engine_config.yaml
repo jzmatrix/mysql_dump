@@ -1,0 +1,39 @@
+{{- $root := . -}}
+{{- range .Values.dnsServers }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: {{ $root.Values.namespace }}
+  name: {{ $root.Values.serviceName }}-{{ .server }}
+spec:
+  serviceName: "{{ $root.Values.serviceName }}-{{ .server }}"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $root.Values.serviceName }}-{{ .server }}
+  template:
+    metadata:
+      labels:
+        app: {{ $root.Values.serviceName }}-{{ .server }}
+    spec:
+      nodeName: {{ .server }}
+      containers:
+      - image: {{ $root.Values.image.name }}:{{ $root.Values.image.tag }}
+        name: {{ $root.Values.serviceName }}
+        env:
+          - name: default-authentication-plugin
+            value: "mysql_native_password"
+          - name: MYSQL_ROOT_PASSWORD
+            value: "{{ $root.Values.dbPassword }}"
+        ports:
+        - containerPort: 3306
+          name: {{ $root.Values.serviceName }}-{{ .server }}
+        volumeMounts:
+          - name: {{ $root.Values.serviceName }}-data-{{ .server }}
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: {{ $root.Values.serviceName }}-data-{{ .server }}
+          persistentVolumeClaim:
+            claimName: {{ $root.Values.serviceName }}-pvc-{{ .server }}
+---
+{{- end }}  
