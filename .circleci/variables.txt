@@ -1,8 +1,2 @@
-- SERVICE_NAME
-- SERVICE_NAMESPACE
-- DBPASSWORD
-- DATAPATH
-- BUPATH
-
-
-helm upgrade mariadb Helm/ --set serviceName="mariadb",namespace="default",dbPassword="",dataPath=""
+- IMAGE_REPO
+- IMAGE_NAME

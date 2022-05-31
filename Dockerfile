@@ -2,7 +2,7 @@ FROM debian:11
 ################################################################################
 RUN apt update && \
     apt -y upgrade && \
-    apt -y install mariadb
+    apt -y install mariadb-client
 ################################################################################
 ADD config/doBackup.sh /opt/doBackup.sh
 RUN chmod 755 /opt/doBackup.sh
