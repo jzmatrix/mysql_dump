@@ -22,6 +22,7 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
+            date +%Y%m%d_%H%M > /tmp/timestamp
             TS=`cat /tmp/timestamp`
             echo $TS
             ##
