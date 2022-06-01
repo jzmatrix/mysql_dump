@@ -8,7 +8,7 @@ if (!$mysqldump) { die "Unable to locate 'mysqldump'"; }
 ################################################################################
 $buUser = "root";
 if ($ENV{'MYSQL_ROOT_PASSWORD'}) { $buPass = $ENV{'MYSQL_ROOT_PASSWORD'};   } else { die ("No password (MYSQL_ROOT_PASSWORD) was provided."); } 
-if ($ENV{'buPath'})              { $buPath = $ENV{'buPath'};                } else { die ("No backup path (buPath) was provided."); } 
+if ($ENV{'backupMount'})         { $buPath = $ENV{'backupMount'};           } else { die ("No backup path (backupMount) was provided."); } 
 if ($ENV{'serverIP'})            { $tgtServer = $ENV{'serverIP'};           } else { die ("No backup server (serverIP) specified"); }
 if ($ENV{'buAge'})               { $buAge = $ENV{'buAge'};                  } else { $buAge = 90; }
 ################################################################################
