@@ -32,23 +32,23 @@ while (length($min) < 2 ) { $min = "0$min";}
 my $u = "_";
 my $curTime = "$year$month$day$u$hour$min";
 ################################################################################
-print "Starting backup for  :: $tgtServer ($buPath/$curTime)\n";
+print "Starting backup for  :: $tgtServer ($buPath/$curTime) :: Retaining for $buAge\n";
 ################################################################################
-&cleanBU($buPath, 7);
+&cleanBU($buPath, $buAge);
 $buPath = $buPath . "/" . $curTime;
 if (!-e $buPath) { `mkdir -p $buPath`;  }
 ################################################################################
 ################################################################################
 my $getDBList_SQL = "$mysql -h $tgtServer -e 'show databases' -u root -p$buPass -s --skip-column-names";
-print "GetDBList :: $getDBList_SQL\n";
 ##########
 my $dbList_RAW = `$getDBList_SQL 2>/dev/null`; chomp $dbList_RAW;
-print "RAW :: $dbList_RAW\n";
 ##########
 my @dbList = split("\n", $dbList_RAW);
 foreach (@dbList)
 {
     my $db = $_;
+    $doIt = 0;
+    if (!$excludedDB->{$db}) { $doIt = 1; }
     if ($doIt)
     {
         my $buCMD = "$mysqldump -h $tgtServer $db -u root -p$buPass --single-transaction=TRUE 2>/dev/null | gzip > \"$buPath/$db-$curTime.sql.gz\"";
