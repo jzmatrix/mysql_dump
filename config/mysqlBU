@@ -12,7 +12,7 @@ if ($ENV{'backupMount'})         { $buPath = $ENV{'backupMount'};           } el
 if ($ENV{'serverIP'})            { $tgtServer = $ENV{'serverIP'};           } else { die ("No backup server (serverIP) specified"); }
 if ($ENV{'buAge'})               { $buAge = $ENV{'buAge'};                  } else { $buAge = 90; }
 ################################################################################
-$buPass =~ s/!/\\!/g;
+$buPass =~ s/!/\\\\!/g;
 ################################################################################
 my $time = time;    # or any other epoch timestamp
 my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");

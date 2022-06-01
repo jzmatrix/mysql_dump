@@ -9,4 +9,5 @@ ADD config/mysqlBU /opt/mysqlBU
 RUN chmod 755 /opt/doBackup.sh && \
     chmod 755 /opt/mysqlBU
 ################################################################################
-CMD ["/opt/doBackup.sh"]
+# CMD ["/opt/doBackup.sh"]
+CMD ["/opt/mysqlBU"]
