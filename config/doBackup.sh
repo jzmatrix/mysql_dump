@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ -z "${BACKUP_AGE}" ]]; then
+  buAGE=90
+else
+  buAGE="${BACKUP_AGE}"
+fi
+
 # Copy config files
 #FILE=/config-ssh/ssh.public
 #if [ -f "$FILE" ]; then
@@ -12,3 +18,5 @@
 #/usr/sbin/sshd -D
 
 env
+
+/opt/mysqlBU

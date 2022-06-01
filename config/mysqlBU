@@ -1,0 +1,110 @@
+#!/usr/bin/perl
+use Time::Local;
+################################################################################
+$mysql = `which mysql`; chomp $mysql;
+$mysqldump = `which mysqldump`; chomp $mysqldump;
+if (!$mysql) { die "Unable to locate 'mysql'"; }
+if (!$mysqldump) { die "Unable to locate 'mysqldump'"; }
+################################################################################
+$buUser = "root";
+if ($ENV{'MYSQL_ROOT_PASSWORD'}) { $buPass = $ENV{'MYSQL_ROOT_PASSWORD'};   } else { die ("No password (MYSQL_ROOT_PASSWORD) was provided."); } 
+if ($ENV{'buPath'})              { $buPath = $ENV{'buPath'};                } else { die ("No backup path (buPath) was provided."); } 
+if ($ENV{'serverIP'})            { $tgtServer = $ENV{'serverIP'};           } else { die ("No backup server (serverIP) specified"); }
+################################################################################
+if ($ENV{'buAge'})               { $buAge = $ENV{'buAge'};                  } else { $buAge = 90; }
+################################################################################
+my $time = time;    # or any other epoch timestamp
+my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+my ($sec, $min, $hour, $day,$month,$year) = (localtime($time))[0,1,2,3,4,5];
+########
+my $curEpoch = timelocal("00","00","00",int($day),int($month),int($year));
+########
+$year = $year + 1900;
+$month ++;
+################################################################################
+while (length($month) < 2 ) { $month = "0$month";}
+while (length($day) < 2 ) { $day = "0$day";}
+while (length($hour) < 2 ) { $hour = "0$hour";}
+while (length($min) < 2 ) { $min = "0$min";}
+################################################################################
+my $u = "_";
+my $curTime = "$year$month$day$u$hour$min";
+################################################################################
+print "Starting backup for  :: $tgtServer ($buPath/$curTime)\n";
+################################################################################
+&cleanBU($buPath, 7);
+$buPath = $buPath . "/" . $curTime;
+if (!-e $buPath) { `mkdir -p $buPath`;  }
+################################################################################
+################################################################################
+my $getDBList_SQL = "$mysql -h $tgtServer -e 'show databases' -p'$buPass' -s --skip-column-names";
+##########
+my $dbList_RAW = `$getDBList_SQL 2>/dev/null`; chomp $dbList_RAW;
+my @dbList = split("\n", $dbList_RAW);
+foreach (@dbList)
+{
+    my $db = $_;
+    if ($doIt)
+    {
+        my $buCMD = "$mysqldump -h $tgtServer $db -u root -p'$buPass' --single-transaction=TRUE 2>/dev/null | gzip > \"$buPath/$db-$curTime.sql.gz\"";
+        # print "buCMD: $buCMD\n";
+        ##########
+        print "\tCreating backup of $db ..... "; 
+        system ($buCMD);
+        print " DONE\n"; 
+    }
+}
+################################################################################
+################################################################################
+`rm $buPath/latest -f`;
+`ln -s $buPath/$curTime $buPath/latest`;
+################################################################################
+print "All Done\n";
+################################################################################
+sub cleanBU
+{
+    my ($path, $age) = @_;
+    ########
+    $minEpoch = $curEpoch - (86400 * $age);
+    ########
+    if ($debug)
+    {
+        print "Doing cleanBU for $path ($age)\n";
+    }
+    ########
+    opendir (DIR, $path);
+    @buList = readdir (DIR);
+    closedir(DIR);
+    @buList = sort(@buList);
+    foreach (@buList)
+    {
+        if (($_ !~ '\.') && ($_ ne "latest"))
+        {
+            my ($date, $time) = split("_", $_);
+            my $year = substr($date,0,4);
+            my $month = substr($date,4,2);
+            my $day = substr($date,6,2);
+            $month --;
+            #####
+            my $buTime = timelocal("00","00","00",int($day),int($month),int($year));
+            ####
+            $doDel = 0;
+            if ($buTime < $minEpoch) { $doDel = 1;}
+            ####
+            $delCMD = "/bin/rm -rf $path/$_";
+            ####
+            if ($debug)
+            {
+                print "BU :: $_ :: $date :: $month/$day/$year :: ($buTime / $minEpoch) :: $doDel\n";
+            }
+            if ($doDel)
+            {
+                if ($debug)
+                {
+                    print "Removing $path/$_\n";
+                }
+                system ($delCMD);
+            }
+        }
+    }
+}

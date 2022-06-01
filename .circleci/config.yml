@@ -30,3 +30,4 @@ jobs:
             ##
             docker push ${IMAGE_REPO}/${IMAGE_NAME}:$TS
             docker push ${IMAGE_REPO}/${IMAGE_NAME}:latest
+
