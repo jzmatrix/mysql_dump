@@ -11,8 +11,9 @@ if ($ENV{'MYSQL_ROOT_PASSWORD'}) { $buPass = $ENV{'MYSQL_ROOT_PASSWORD'};   } el
 if ($ENV{'backupMount'})         { $buPath = $ENV{'backupMount'};           } else { die ("No backup path (backupMount) was provided."); } 
 if ($ENV{'serverIP'})            { $tgtServer = $ENV{'serverIP'};           } else { die ("No backup server (serverIP) specified"); }
 if ($ENV{'buAge'})               { $buAge = $ENV{'buAge'};                  } else { $buAge = 90; }
+$buRoot = $buPath;
 ################################################################################
-$buPass =~ s/!/\\\\!/g;
+$buPass =~ s/!/\\!/g;
 ################################################################################
 my $time = time;    # or any other epoch timestamp
 my @months = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
@@ -60,8 +61,8 @@ foreach (@dbList)
 }
 ################################################################################
 ################################################################################
-`rm $buPath/latest -f`;
-`ln -s $buPath/$curTime $buPath/latest`;
+`rm $buRoot/latest -f`;
+`ln -s $buPath $buRoot/latest`;
 ################################################################################
 print "All Done\n";
 ################################################################################
