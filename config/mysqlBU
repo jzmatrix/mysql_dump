@@ -32,7 +32,8 @@ while (length($min) < 2 ) { $min = "0$min";}
 my $u = "_";
 my $curTime = "$year$month$day$u$hour$min";
 ################################################################################
-print "Starting backup for  :: $tgtServer ($buPath/$curTime) :: Retaining for $buAge\n";
+print "Starting backup for  :: $tgtServer ($buPath/$curTime) :: Retaining for $buAge days\n";
+print "----------\n";
 ################################################################################
 &cleanBU($buPath, $buAge);
 $buPath = $buPath . "/" . $curTime;
@@ -52,7 +53,6 @@ foreach (@dbList)
     if ($doIt)
     {
         my $buCMD = "$mysqldump -h $tgtServer $db -u root -p$buPass --single-transaction=TRUE 2>/dev/null | gzip > \"$buPath/$db-$curTime.sql.gz\"";
-        print "buCMD: $buCMD\n";
         ##########
         print "\tCreating backup of $db ..... "; 
         system ($buCMD);
@@ -64,6 +64,7 @@ foreach (@dbList)
 `rm $buRoot/latest -f`;
 `ln -s $buPath $buRoot/latest`;
 ################################################################################
+print "----------\n";
 print "All Done\n";
 ################################################################################
 sub cleanBU
