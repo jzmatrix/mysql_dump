@@ -38,7 +38,8 @@ $buPath = $buPath . "/" . $curTime;
 if (!-e $buPath) { `mkdir -p $buPath`;  }
 ################################################################################
 ################################################################################
-my $getDBList_SQL = "$mysql -h $tgtServer -e 'show databases' -p'$buPass' -s --skip-column-names";
+my $getDBList_SQL = "$mysql -h $tgtServer -e 'show databases' -p$buPass -s --skip-column-names";
+print "GetDBList :: $getDBList_SQL\n";
 ##########
 my $dbList_RAW = `$getDBList_SQL 2>/dev/null`; chomp $dbList_RAW;
 my @dbList = split("\n", $dbList_RAW);
@@ -47,8 +48,8 @@ foreach (@dbList)
     my $db = $_;
     if ($doIt)
     {
-        my $buCMD = "$mysqldump -h $tgtServer $db -u root -p'$buPass' --single-transaction=TRUE 2>/dev/null | gzip > \"$buPath/$db-$curTime.sql.gz\"";
-        # print "buCMD: $buCMD\n";
+        my $buCMD = "$mysqldump -h $tgtServer $db -u root -p$buPass --single-transaction=TRUE 2>/dev/null | gzip > \"$buPath/$db-$curTime.sql.gz\"";
+        print "buCMD: $buCMD\n";
         ##########
         print "\tCreating backup of $db ..... "; 
         system ($buCMD);
