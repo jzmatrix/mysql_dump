@@ -38,10 +38,12 @@ $buPath = $buPath . "/" . $curTime;
 if (!-e $buPath) { `mkdir -p $buPath`;  }
 ################################################################################
 ################################################################################
-my $getDBList_SQL = "$mysql -h $tgtServer -e 'show databases' -p$buPass -s --skip-column-names";
+my $getDBList_SQL = "$mysql -h $tgtServer -e 'show databases' -u root -p$buPass -s --skip-column-names";
 print "GetDBList :: $getDBList_SQL\n";
 ##########
 my $dbList_RAW = `$getDBList_SQL 2>/dev/null`; chomp $dbList_RAW;
+print "RAW :: $dbList_RAW\n";
+##########
 my @dbList = split("\n", $dbList_RAW);
 foreach (@dbList)
 {
